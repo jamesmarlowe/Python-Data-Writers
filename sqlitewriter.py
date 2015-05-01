@@ -3,11 +3,11 @@ class SqliteWriter:
         self.db_sqlite3 = sqlite_database
 
     def save(list_of_dicts):
+        all_keys = set().union(*(d.keys() for d in list_of_dicts))
+    
         db = sqlite3.connect(self.db_sqlite3)
         cursor = db.cursor()
         
-        
-
         cursor.execute('''CREATE TABLE IF NOT EXISTS InmobiData(
                     id INTEGER PRIMARY KEY,
                     manufacturer TEXT

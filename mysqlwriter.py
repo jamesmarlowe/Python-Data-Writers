@@ -4,6 +4,8 @@ class MysqlWriter:
         self.user_mysql = mysql_user
 
     def save(list_of_dicts):
+        all_keys = set().union(*(d.keys() for d in list_of_dicts))
+        
         db = mysql.connector.connect(user=self.user_mysql)
         cursor = db.cursor()
         try:
