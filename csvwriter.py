@@ -9,6 +9,5 @@ class CsvWriter:
         writer.writerow(all_keys)
         
         for _dict in list_of_dicts:
-            row = [_dict.get()]
-            writer.writerow(list())
+            writer.writerow([_dict.get(key, '') for key in all_keys])
         

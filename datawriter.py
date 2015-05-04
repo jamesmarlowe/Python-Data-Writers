@@ -1,11 +1,13 @@
 import mysqlwriter
 import sqlitewriter
+import csvwriter
 
 class DataWriter:
 
     self.writers = {
         'mysql':mysqlwriter,
-        'sqlite':sqlitewriter
+        'sqlite':sqlitewriter,
+        'csv':csvwriter
     }
 
     def __init__(**kwargs):
@@ -13,3 +15,4 @@ class DataWriter:
         
     def save(list_of_dicts):
         self.writer.save(list_of_dicts)
+
