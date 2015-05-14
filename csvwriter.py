@@ -1,10 +1,17 @@
+import csv
+
 class CsvWriter:
-    def __init__(self, csv_database):
-        self.db_csv = csv_database
+    def __init__(self, *args, **kwargs):
+        if 'database' in kwargs:
+            self.db_csv = kwargs['database']
+        else:
+            print 'missing database argument, using tmp.csv'
+            self.db_csv = 'tmp.csv'
 
-    def save(list_of_dicts):
-        all_keys = set().union(*(d.keys() for d in list_of_dicts))
+    def save(self, list_of_dicts):
+        all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
 
+        f = open(self.db_csv, 'wb')
         writer = csv.writer(f, delimiter=',')
         writer.writerow(all_keys)
         

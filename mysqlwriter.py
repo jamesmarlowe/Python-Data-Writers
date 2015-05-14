@@ -1,13 +1,26 @@
-class MysqlWriter:
-    def __init__(self, mysql_database, mysql_user):
-        self.db_mysql = mysql_database
-        self.user_mysql = mysql_user
+import mysql.connector
 
-    def save(list_of_dicts):
-        all_keys = set().union(*(d.keys() for d in list_of_dicts))
+class MysqlWriter:
+    def __init__(self, *args, **kwargs):
+        if 'database' in kwargs:
+            self.db_mysql = kwargs['database']
+        else:
+            print 'missing database argument, using tmp'
+            self.db_mysql = 'tmp.sqlite'
+        if 'user' in kwargs:
+            self.db_mysql = kwargs['user']
+        else:
+            print 'missing user argument, using root'
+            self.user_mysql = 'root'
+
+    def save(self, list_of_dicts):
+        all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
+        all_vals = list(set().union(*(d.values() for d in list_of_dicts)))
+        max_length = max(all_vals, key=len)
         
         db = mysql.connector.connect(user=self.user_mysql)
         cursor = db.cursor()
+        
         try:
             db.database = self.db_mysql
         except mysql.connector.Error as err:
@@ -22,13 +35,18 @@ class MysqlWriter:
             else:
                 print(err)
                 exit(1)
+                
         TABLE_SQL = (
-        "CREATE TABLE `DataTable` ("
-        "  `id` int(11) NOT NULL AUTO_INCREMENT,"
-        "  `update_date` TIMESTAMP NOT NULL,"
-        "  `manufacturer` varchar(40),"
-        "  PRIMARY KEY (`id`)"
-        ") ENGINE=InnoDB")
+            "CREATE TABLE `DataTable` ("
+            "  `id` int(11) NOT NULL AUTO_INCREMENT,"
+            "  `update_date` TIMESTAMP NOT NULL,"
+            ""+'  varchar('+max_length+'),'.join([k for k in all_keys])+' varchar('+max_length+')'+""
+            "  PRIMARY KEY (`id`)"
+            ") ENGINE=InnoDB"
+        )
+        
+        print TABLE_SQL
+        
         try:
             print "Creating table DataTable Table"
             cursor.execute(TABLE_SQL)
@@ -41,12 +59,8 @@ class MysqlWriter:
         else:
             print("table already exists")
 
-        #print "INSERT INTO DataTable (" + ",".join(list_of_dicts[0].keys()) + ") VALUES(" + ",".join(["%s"] * len(list_of_dicts[0].keys())) + ")"
-
-        #print [tuple(d.get(k, "NULL") for k in d.keys()) for d in list_of_dicts]
-        cursor.executemany("INSERT INTO DataTable (" + ",".join(list_of_dicts[0].keys()) + ") " +
-                        "VALUES(" + ",".join(["%s"] * len(list_of_dicts[0].keys())) + ")",
-                        #[tuple(row[col] for col in cols) for row in data])
-                        [tuple(d.get(k, "NULL") for k in list_of_dicts[0].keys()) for d in list_of_dicts])
+        cursor.executemany("INSERT INTO DataTable (" + ",".join(all_keys) + ") " +
+                           "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
+                           [tuple(d.get(k, "NULL") for k in all_keys) for d in list_of_dicts])
         db.commit()
 
