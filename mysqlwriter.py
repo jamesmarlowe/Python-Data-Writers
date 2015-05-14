@@ -6,7 +6,7 @@ class MysqlWriter:
             self.db_mysql = kwargs['database']
         else:
             print 'missing database argument, using tmp'
-            self.db_mysql = 'tmp.sqlite'
+            self.db_mysql = 'tmp'
         if 'user' in kwargs:
             self.db_mysql = kwargs['user']
         else:
@@ -16,7 +16,7 @@ class MysqlWriter:
     def save(self, list_of_dicts):
         all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
         all_vals = list(set().union(*(d.values() for d in list_of_dicts)))
-        max_length = max(all_vals, key=len)
+        max_length = len(max(all_vals, key=len))
         
         db = mysql.connector.connect(user=self.user_mysql)
         cursor = db.cursor()
@@ -24,7 +24,7 @@ class MysqlWriter:
         try:
             db.database = self.db_mysql
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_BAD_DB_ERROR:
+            if err.errno == mysql.connector.errorcode.ER_BAD_DB_ERROR:
                 try:
                     cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(self.db_mysql))
                     db.database = self.db_mysql
@@ -40,7 +40,7 @@ class MysqlWriter:
             "CREATE TABLE `DataTable` ("
             "  `id` int(11) NOT NULL AUTO_INCREMENT,"
             "  `update_date` TIMESTAMP NOT NULL,"
-            ""+'  varchar('+max_length+'),'.join([k for k in all_keys])+' varchar('+max_length+')'+""
+            ""+('  varchar('+max_length+'),').join([k for k in all_keys])+' varchar('+max_length+')'+""
             "  PRIMARY KEY (`id`)"
             ") ENGINE=InnoDB"
         )
@@ -52,7 +52,7 @@ class MysqlWriter:
             cursor.execute(TABLE_SQL)
             db.commit()
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+            if err.errno == mysql.connector.errorcode.ER_TABLE_EXISTS_ERROR:
                 print("table already exists")
             else:
                 print(err.msg)
