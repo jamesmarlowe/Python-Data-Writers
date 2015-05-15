@@ -16,7 +16,7 @@ class MysqlWriter:
     def save(self, list_of_dicts):
         all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
         all_vals = list(set().union(*(d.values() for d in list_of_dicts)))
-        max_length = len(max(all_vals, key=len))
+        max_length = str(len(max(all_vals, key=len)))
         
         db = mysql.connector.connect(user=self.user_mysql)
         cursor = db.cursor()
@@ -40,12 +40,10 @@ class MysqlWriter:
             "CREATE TABLE `DataTable` ("
             "  `id` int(11) NOT NULL AUTO_INCREMENT,"
             "  `update_date` TIMESTAMP NOT NULL,"
-            ""+('  varchar('+max_length+'),').join([k for k in all_keys])+' varchar('+max_length+')'+""
+            ""+('  varchar('+max_length+'),').join(['`'+str(k)+'`' for k in all_keys])+' varchar('+max_length+'),'+""
             "  PRIMARY KEY (`id`)"
             ") ENGINE=InnoDB"
         )
-        
-        print TABLE_SQL
         
         try:
             print "Creating table DataTable Table"
