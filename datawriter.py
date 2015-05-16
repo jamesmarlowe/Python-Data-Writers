@@ -2,6 +2,7 @@ from mysqlwriter  import MysqlWriter
 from sqlitewriter import SqliteWriter
 from csvwriter    import CsvWriter
 from rediswriter  import RedisWriter
+from mongowriter  import MongoWriter
 
 class DataWriter:
 
@@ -9,14 +10,15 @@ class DataWriter:
         'mysql' :MysqlWriter,
         'sqlite':SqliteWriter,
         'csv'   :CsvWriter,
-        'redis' :RedisWriter
+        'redis' :RedisWriter,
+        'mongo' :MongoWriter
     }
 
     def __init__(self, *args, **kwargs):
         self.writer = self.writers[kwargs['writer']](*args, **kwargs)
         
     def reinit(self, *args, **kwargs):
-        self.__init__(**kwargs)
+        self.__init__(*args, **kwargs)
         
     def save(self, list_of_dicts):
         self.writer.save(list_of_dicts)
@@ -27,8 +29,5 @@ class DataWriter:
                           {"column1":"row3-item1", "column2":"row3-item2"}])
 
 if __name__ == "__main__":
-    DataWriter(writer='csv').test()
-    #for writer in DataWriter.writers.keys():
-    #    #print "hi"
-    #    DataWriter(writer=writer)#.test()
+    DataWriter(writer='mongo').test()
 
