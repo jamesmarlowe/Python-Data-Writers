@@ -13,15 +13,15 @@ class PostgresWriter:
             print 'missing database argument, using data'
             self.db_postgres = 'data'
         if 'user' in kwargs:
-            self.db_postgres = kwargs['user']
+            self.user_postgres = kwargs['user']
         else:
-            print 'missing user argument, using postgres'
-            self.user_postgres = 'postgres'
-        if 'pass' in kwargs:
-            self.pass_postgres = kwargs['pass']
+            print 'missing user argument, using postuser'
+            self.user_postgres = 'postuser'
+        if 'password' in kwargs:
+            self.pass_postgres = kwargs['password']
         else:
-            print 'missing pass argument, using ""'
-            self.pass_postgres = ''
+            print 'missing password argument, using postpass'
+            self.pass_postgres = 'postpass'
         if 'table' in kwargs:
             self.db_table = kwargs['table']
         else:
@@ -30,20 +30,21 @@ class PostgresWriter:
 
     def save(self, list_of_dicts):
         all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
+        all_vals = list(set().union(*(d.values() for d in list_of_dicts)))
+        max_length = str(len(max(all_vals, key=len)))
     
         db = psycopg2.connect("dbname='"+self.db_postgres+"' user='"+self.user_postgres+"' host='"+self.host+"' password='"+self.pass_postgres+"'")
         cursor = db.cursor()
         
         TABLE_SQL = (
-            "CREATE TABLE `"+self.db_table+"` ("
-            "  `id` int(11) NOT NULL AUTO_INCREMENT,"
-            "  `update_date` TIMESTAMP NOT NULL,"
-            ""+('  varchar('+max_length+'),').join(['`'+str(k)+'`' for k in all_keys])+' varchar('+max_length+'),'+""
-            "  PRIMARY KEY (`id`)"
+            "CREATE TABLE "+self.db_table+" ("
+            "  id SERIAL NOT NULL PRIMARY KEY,"
+            "  update_date TIMESTAMP NOT NULL default current_timestamp,"
+            ""+(' varchar('+max_length+'),').join([str(k) for k in all_keys])+' varchar('+max_length+')'
             ")"
         )
         
-        cursor.execute(CREATE_TABLE)
+        cursor.execute(TABLE_SQL)
 
         cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
                            "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",

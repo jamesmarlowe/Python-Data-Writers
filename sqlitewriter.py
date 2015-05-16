@@ -5,8 +5,8 @@ class SqliteWriter:
         if 'database' in kwargs:
             self.db_sqlite3 = kwargs['database']
         else:
-            print 'missing database argument, using tmp.sqlite'
-            self.db_sqlite3 = 'tmp.sqlite'
+            print 'missing database argument, using data.sqlite'
+            self.db_sqlite3 = 'data.sqlite'
         if 'table' in kwargs:
             self.db_table = kwargs['table']
         else:
