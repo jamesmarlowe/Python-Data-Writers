@@ -5,13 +5,18 @@ class MysqlWriter:
         if 'database' in kwargs:
             self.db_mysql = kwargs['database']
         else:
-            print 'missing database argument, using tmp'
-            self.db_mysql = 'tmp'
+            print 'missing database argument, using data'
+            self.db_mysql = 'data'
         if 'user' in kwargs:
             self.db_mysql = kwargs['user']
         else:
             print 'missing user argument, using root'
             self.user_mysql = 'root'
+        if 'table' in kwargs:
+            self.db_table = kwargs['table']
+        else:
+            print 'missing table argument, using DataTable'
+            self.db_table = 'DataTable'
 
     def save(self, list_of_dicts):
         all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
@@ -37,7 +42,7 @@ class MysqlWriter:
                 exit(1)
                 
         TABLE_SQL = (
-            "CREATE TABLE `DataTable` ("
+            "CREATE TABLE `"+self.db_table+"` ("
             "  `id` int(11) NOT NULL AUTO_INCREMENT,"
             "  `update_date` TIMESTAMP NOT NULL,"
             ""+('  varchar('+max_length+'),').join(['`'+str(k)+'`' for k in all_keys])+' varchar('+max_length+'),'+""
@@ -46,7 +51,7 @@ class MysqlWriter:
         )
         
         try:
-            print "Creating table DataTable Table"
+            print "Creating table "+self.db_table
             cursor.execute(TABLE_SQL)
             db.commit()
         except mysql.connector.Error as err:
@@ -57,7 +62,7 @@ class MysqlWriter:
         else:
             print("table already exists")
 
-        cursor.executemany("INSERT INTO DataTable (" + ",".join(all_keys) + ") " +
+        cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
                            "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
                            [tuple(d.get(k, "NULL") for k in all_keys) for d in list_of_dicts])
         db.commit()
