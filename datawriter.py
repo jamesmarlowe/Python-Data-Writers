@@ -1,19 +1,21 @@
-from mysqlwriter    import MysqlWriter
-from sqlitewriter   import SqliteWriter
-from csvwriter      import CsvWriter
-from rediswriter    import RedisWriter
-from mongowriter    import MongoWriter
-from postgreswriter import PostgresWriter
+from mysqlwriter     import MysqlWriter
+from sqlitewriter    import SqliteWriter
+from csvwriter       import CsvWriter
+from rediswriter     import RedisWriter
+from mongowriter     import MongoWriter
+from postgreswriter  import PostgresWriter
+from aerospikewriter import AerospikeWriter
 
 class DataWriter:
 
     writers = {
-        'mysql'   :MysqlWriter,
-        'sqlite'  :SqliteWriter,
-        'csv'     :CsvWriter,
-        'redis'   :RedisWriter,
-        'mongo'   :MongoWriter,
-        'postgres':PostgresWriter
+        'mysql'    :MysqlWriter,
+        'sqlite'   :SqliteWriter,
+        'csv'      :CsvWriter,
+        'redis'    :RedisWriter,
+        'mongo'    :MongoWriter,
+        'postgres' :PostgresWriter,
+        'aerospike':AerospikeWriter
     }
 
     def __init__(self, *args, **kwargs):
