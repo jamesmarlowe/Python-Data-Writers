@@ -1,13 +1,15 @@
-import mysqlwriter
-import sqlitewriter
-import csvwriter
+from mysqlwriter  import MysqlWriter
+from sqlitewriter import SqliteWriter
+from csvwriter    import CsvWriter
+from rediswriter  import RedisWriter
 
 class DataWriter:
 
     writers = {
-        'mysql' :mysqlwriter.MysqlWriter,
-        'sqlite':sqlitewriter.SqliteWriter,
-        'csv'   :csvwriter.CsvWriter
+        'mysql' :MysqlWriter,
+        'sqlite':SqliteWriter,
+        'csv'   :CsvWriter,
+        'redis' :RedisWriter
     }
 
     def __init__(self, *args, **kwargs):
@@ -25,7 +27,7 @@ class DataWriter:
                           {"column1":"row3-item1", "column2":"row3-item2"}])
 
 if __name__ == "__main__":
-    DataWriter(writer='mysql').test()
+    DataWriter(writer='csv').test()
     #for writer in DataWriter.writers.keys():
     #    #print "hi"
     #    DataWriter(writer=writer)#.test()
