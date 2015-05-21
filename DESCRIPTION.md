@@ -11,6 +11,9 @@ It can be used to write to:
 * sqlite
 * mysql
 * redis
+* mongo
+* postgres
+* aerospike
 
 Example usage is as simple as:
 

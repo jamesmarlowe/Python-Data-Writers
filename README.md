@@ -14,7 +14,15 @@ It can be used to write to:
 
 Setup
 =====
-
+Install
+-------
+```
+pip install data-writers
+```
+or manually install with:
+```
+python setup.py install
+```
 To use mysql:
 -------------
 ```
@@ -36,6 +44,7 @@ bind-address        = xxx.xxx.xxx.xxx
 To use redis:
 ----------------
 ```
+sudo pip install redis
 sudo apt-get install redis-server
 sudo service redis-server restart
 ```
@@ -43,6 +52,7 @@ sudo service redis-server restart
 To use mongo:
 ----------------
 ```
+sudo pip install pymongo
 sudo apt-get install mongodb-server
 sudo service mongodb restart
 ```
