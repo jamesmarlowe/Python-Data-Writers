@@ -19,7 +19,7 @@ To use mysql:
 -------------
 ```
 sudo apt-get install libmysqlclient-dev mysql-server
-sudo pip install --allow-external mysql-connector-python   mysql-connector-python
+sudo pip install --allow-external mysql-connector-python mysql-connector-python
 mysql -u root
 > CREATE USER 'myuser'@'localhost' IDENTIFIED BY 'mypass';
 > CREATE USER 'myuser'@'%' IDENTIFIED BY 'mypass';
@@ -69,6 +69,10 @@ sudo /etc/init.d/aerospike start
 
 Usage
 =====
+Import DataWriter
+```
+from datawriters.datawriter import DataWriter
+```
 Create a list of dictionaries for your data:
 ```
 data = [{"column1":"row1-item1", "column2":"row1-item2"},
@@ -78,7 +82,7 @@ data = [{"column1":"row1-item1", "column2":"row1-item2"},
 csv
 ---
 ```
-DataWriter(writer='csv', database='data.csv', ).save(data)
+DataWriter(writer='csv', database='data.csv').save(data)
 ```
 ```
 cat data.csv
