@@ -8,7 +8,7 @@ class MysqlWriter:
             print 'missing database argument, using data'
             self.db_mysql = 'data'
         if 'user' in kwargs:
-            self.db_mysql = kwargs['user']
+            self.user_mysql = kwargs['user']
         else:
             print 'missing user argument, using root'
             self.user_mysql = 'root'
