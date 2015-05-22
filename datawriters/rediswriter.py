@@ -16,7 +16,7 @@ class RedisWriter:
             self.database = kwargs['database']
         else:
             print 'missing database argument, using 0'
-            self.database = '6379'
+            self.database = '0'
 
     def save(self, list_of_dicts):
         pipe = redis.StrictRedis(host=self.host, port=self.port, db=self.database).pipeline()
