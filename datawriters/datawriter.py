@@ -1,4 +1,7 @@
 writers = {}
+
+from notimplementedwriter import FailedWriter
+
 try:
     from mysqlwriter import MysqlWriter
     writers['mysql'] = MysqlWriter if (MysqlWriter is not None) else FailedWriter
@@ -34,8 +37,6 @@ try:
     writers['aerospike'] = AerospikeWriter if (AerospikeWriter is not None) else FailedWriter
 except ImportError:
     pass
-
-from notimplementedwriter import FailedWriter
 
 class DataWriter:
 

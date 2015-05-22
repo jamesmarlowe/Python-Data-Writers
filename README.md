@@ -16,6 +16,7 @@ Setup
 =====
 Install
 -------
+pypi: https://pypi.python.org/pypi/data-writers/
 ```
 pip install data-writers
 ```
@@ -100,7 +101,7 @@ cat data.csv
 sqlite
 ------
 ```
-DataWriter(writer='mysql', database='data.sqlite', table='DataTable').save(data)
+DataWriter(writer='sqlite', database='data.sqlite', table='DataTable').save(data)
 ```
 ```
 sqlite3
