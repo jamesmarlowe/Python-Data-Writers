@@ -21,7 +21,9 @@ class MysqlWriter:
     def save(self, list_of_dicts):
         all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
         all_vals = list(set().union(*(d.values() for d in list_of_dicts)))
-        max_length = str(len(max(all_vals, key=len)))
+        def key_order(val):
+            return len(str(val))
+        max_length = str(len(max(all_vals, key=key_order)))
         
         db = mysql.connector.connect(user=self.user_mysql)
         cursor = db.cursor()
