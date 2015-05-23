@@ -81,6 +81,6 @@ class MysqlWriter:
             cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
                                "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
                                insert_vals)
-        
+            print "saving", len(insert_vals), "rows of",len(list_of_dicts) 
         db.commit()
 
