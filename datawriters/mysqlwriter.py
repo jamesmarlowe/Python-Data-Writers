@@ -18,7 +18,7 @@ class MysqlWriter:
             print 'missing table argument, using DataTable'
             self.db_table = 'DataTable'
 
-    def save(self, list_of_dicts, ignore_duplicate_row_from_key=''):
+    def save(self, list_of_dicts, *args, **kwargs):
         all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
         all_vals = list(set().union(*(d.values() for d in list_of_dicts)))
         def key_order(val):
@@ -64,7 +64,7 @@ class MysqlWriter:
         else:
             print("table already exists")
             
-        if ignore_duplicate_row_from_key == '':
+        if 'ignore_duplicate_row_from_key' not in kwargs:
             cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
                                "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
                                [tuple(d.get(k, "NULL") for k in all_keys) for d in list_of_dicts])
@@ -73,9 +73,9 @@ class MysqlWriter:
             cursor.execute(query, (ignore_duplicate_row_from_key,self.db_table))
             insert_vals  =  [tuple(d.get(k, "NULL") for k in all_keys)
                                 for d in list_of_dicts if 
-                                    ((ignore_duplicate_row_from_key in d and
-                                    d[ignore_duplicate_row_from_key] not in cursor) or
-                                    ignore_duplicate_row_from_key not in d)
+                                    ((kwargs['ignore_duplicate_row_from_key'] in d and
+                                    d[kwargs['ignore_duplicate_row_from_key']] not in cursor) or
+                                    kwargs['ignore_duplicate_row_from_key'] not in d)
                             ]
             cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
                                "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",

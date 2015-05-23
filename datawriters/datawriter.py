@@ -49,7 +49,7 @@ class DataWriter:
     def reinit(self, *args, **kwargs):
         self.__init__(*args, **kwargs)
         
-    def save(self, list_of_dicts):
+    def save(self, list_of_dicts, *args, **kwargs):
         self.writer.save(list_of_dicts)
         print 'data writen to '+self.write_name
         
