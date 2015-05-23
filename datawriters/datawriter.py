@@ -50,7 +50,7 @@ class DataWriter:
         self.__init__(*args, **kwargs)
         
     def save(self, list_of_dicts, *args, **kwargs):
-        self.writer.save(list_of_dicts)
+        self.writer.save(list_of_dicts, *args, **kwargs)
         print 'data writen to '+self.write_name
         
     def test(self):

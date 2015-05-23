@@ -69,12 +69,13 @@ class MysqlWriter:
                                "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
                                [tuple(d.get(k, "NULL") for k in all_keys) for d in list_of_dicts])
         else:
-            existing_rows_from_key = ("select distinct(%s) from %s")
-            cursor.execute(query, (ignore_duplicate_row_from_key,self.db_table))
+            existing_rows_from_key = ("select distinct("+kwargs['ignore_duplicate_row_from_key']+") from "+self.db_table)
+            cursor.execute(existing_rows_from_key)
+            existing_rows = [item for (item,) in cursor]
             insert_vals  =  [tuple(d.get(k, "NULL") for k in all_keys)
                                 for d in list_of_dicts if 
                                     ((kwargs['ignore_duplicate_row_from_key'] in d and
-                                    d[kwargs['ignore_duplicate_row_from_key']] not in cursor) or
+                                    d[kwargs['ignore_duplicate_row_from_key']] not in existing_rows) or
                                     kwargs['ignore_duplicate_row_from_key'] not in d)
                             ]
             cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
