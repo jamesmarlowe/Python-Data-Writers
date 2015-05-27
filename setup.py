@@ -64,7 +64,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='database write csv data postgres mysql redis sqlite mongo',
+    keywords='database write csv data postgres mysql redis sqlite mongo aerospike',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().

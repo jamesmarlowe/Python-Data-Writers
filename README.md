@@ -11,6 +11,7 @@ It can be used to write to:
 * postgres
 * aerospike
 
+Look at https://github.com/jamesmarlowe/Python-Data-Readers to write to them. This library was written with the intention to be useful without `data-readers` but they work very well together.
 
 Setup
 =====

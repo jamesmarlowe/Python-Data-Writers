@@ -44,7 +44,10 @@ class PostgresWriter:
             ")"
         )
         
-        cursor.execute(TABLE_SQL)
+        try:
+            cursor.execute(TABLE_SQL)
+        except psycopg2.ProgrammingError:
+            db.commit()
 
         cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
                            "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
