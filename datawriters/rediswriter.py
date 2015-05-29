@@ -23,7 +23,10 @@ class RedisWriter:
         pipe.flushdb()
         id = 0
         for _dict in list_of_dicts:
-            id += 1
-            pipe.hmset('data:'+str(id), _dict)
-            [pipe.sadd(str(key)+':'+str(_dict[key]), str(id)) for key in _dict.keys()]
+            if len(_dict.keys()) > 1:
+                id += 1
+                pipe.hmset('data:'+str(id), _dict)
+                [pipe.sadd(str(key)+':'+str(_dict[key]), str(id)) for key in _dict.keys()]
+            elif len(_dict.keys()) == 1:
+                pipe.mset(_dict)
         pipe.execute()
