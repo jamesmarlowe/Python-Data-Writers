@@ -29,6 +29,8 @@ class MysqlWriter:
             self.db_table = 'DataTable'
 
     def save(self, list_of_dicts, *args, **kwargs):
+        if not list_of_dicts:
+            return
         all_keys = list(set().union(*(d.keys() for d in list_of_dicts)))
         all_vals = list(set().union(*(d.values() for d in list_of_dicts)))
         def key_order(val):
@@ -79,7 +81,7 @@ class MysqlWriter:
             print("table already exists")
             
         if 'expire_minutes' in kwargs:
-            expire_entries = ("CREATE EVENT IF NOT EXISTS Expire"+self.db_mysql+self.db_table+" "
+            expire_entries = ("CREATE EVENT IF NOT EXISTS `Expire"+self.db_mysql+self.db_table+"` "
                               "ON SCHEDULE EVERY 5 MINUTE "
                               "DO DELETE FROM "+self.db_table+" "
                               "WHERE TIMESTAMPDIFF(MINUTE,"+self.db_table+".update_date, NOW())>"
@@ -87,39 +89,33 @@ class MysqlWriter:
             cursor.execute(expire_entries)
             
         if 'override_previous_from_key' in kwargs:
-            existing_rows_from_key = ("select distinct("+kwargs['override_previous_from_key']+") from "+self.db_table)
+            existing_rows_from_key = ("select distinct("+kwargs['override_previous_from_key']+") from `"+self.db_table+"`")
             cursor.execute(existing_rows_from_key)
             existing_rows = set([item for (item,) in cursor])
-            #print "existing_rows", existing_rows
             new_rows = set([d.get(kwargs['override_previous_from_key'], "NULL") for k in all_keys for d in list_of_dicts])
-            #print "new_rows", new_rows
             overlap = list(set.intersection(existing_rows, new_rows))
-            #print "overlap", overlap
-            delete_entries = ("DELETE FROM "+self.db_table+" "
-                              "WHERE "+kwargs['override_previous_from_key']+" = %s")
-            #print delete_entries
-            #print [[o] for o in overlap]
+            delete_entries = ("DELETE FROM `"+self.db_table+"` "
+                              "WHERE `"+kwargs['override_previous_from_key']+"` = %s")
             cursor.executemany(delete_entries, [[o] for o in overlap])
-            cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
-                               "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
-                               [tuple(d.get(k, "NULL") for k in all_keys) for d in list_of_dicts])
+            insert_vals = [[d.get(k, "NULL") for k in all_keys] for d in list_of_dicts]
+            
         elif 'ignore_duplicate_row_from_key' in kwargs:
-            existing_rows_from_key = ("select distinct("+kwargs['ignore_duplicate_row_from_key']+") from "+self.db_table)
+            existing_rows_from_key = ("select distinct("+kwargs['ignore_duplicate_row_from_key']+") from `"+self.db_table+"`")
             cursor.execute(existing_rows_from_key)
             existing_rows = [item for (item,) in cursor]
-            insert_vals  =  [tuple(d.get(k, "NULL") for k in all_keys)
+            insert_vals  =  [[d.get(k, "NULL") for k in all_keys]
                                 for d in list_of_dicts if 
                                     ((kwargs['ignore_duplicate_row_from_key'] in d and
                                     d[kwargs['ignore_duplicate_row_from_key']] not in existing_rows) or
                                     kwargs['ignore_duplicate_row_from_key'] not in d)
                             ]
-            cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
-                               "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
-                               insert_vals)
             print "saving", len(insert_vals), "rows of",len(list_of_dicts) 
+            
         else:
-            cursor.executemany("INSERT INTO "+self.db_table+" (" + ",".join(all_keys) + ") " +
-                               "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
-                               [tuple(d.get(k, "NULL") for k in all_keys) for d in list_of_dicts])
+            insert_vals = [[d.get(k, "NULL") for k in all_keys] for d in list_of_dicts]
+            
+        cursor.executemany("INSERT INTO `"+self.db_table+"` (`" + "`,`".join(all_keys) + "`) " +
+                           "VALUES(" + ",".join(["%s"] * len(all_keys)) + ")",
+                           insert_vals)
         db.commit()
 
