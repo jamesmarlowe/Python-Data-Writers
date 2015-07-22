@@ -12,10 +12,15 @@ class MysqlWriter:
         else:
             print 'missing user argument, using root'
             self.user_mysql = 'root'
-        if 'pass' in kwargs:
-            self.pass_mysql = kwargs['pass']
+        if 'host' in kwargs:
+            self.host_mysql = kwargs['host']
         else:
-            print 'missing pass argument, skipping'
+            print 'missing host argument, using 127.0.0.1'
+            self.host_mysql = '127.0.0.1'
+        if 'password' in kwargs:
+            self.pass_mysql = kwargs['password']
+        else:
+            print 'missing password argument, skipping'
             self.pass_mysql = ''
         if 'table' in kwargs:
             self.db_table = kwargs['table']
@@ -30,7 +35,7 @@ class MysqlWriter:
             return len(str(val))
         max_length = str(len(max(all_vals, key=key_order)))
         
-        config = {user=self.user_mysql}
+        config = {'user':self.user_mysql, 'host':self.host_mysql }
         if self.pass_mysql != '':
             config['password'] = self.pass_mysql
         
