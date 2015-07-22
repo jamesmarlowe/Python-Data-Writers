@@ -3,3 +3,4 @@
 *.sqlite
 build/
 dist/
+data_writers.egg-info/
