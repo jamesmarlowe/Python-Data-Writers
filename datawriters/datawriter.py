@@ -63,10 +63,12 @@ class DataWriter:
         
     def read(self, *args, **kwargs):
         try:
-            self.reader.read(*args, **kwargs)
-            print 'Data read from '+self.reader_name
+            list_of_dicts = self.reader.read(*args, **kwargs)
+            if isinstance(list_of_dicts, list):
+                print 'Data read from '+self.reader_name
+            return list_of_dicts
         except:
-            print "Can't save without DataWriter"
+            print "Can't read without DataReader"
         
     def test(self):
         try:
